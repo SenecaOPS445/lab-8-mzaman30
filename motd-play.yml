@@ -1,0 +1,10 @@
+---
+- name: Set custom MOTD
+  hosts: myvmlab
+  become: yes
+  tasks:
+    - name: Add MOTD message
+      copy:
+        dest: /etc/motd
+        content: "Welcome to OPS445 - Ansible Managed!\n"
+

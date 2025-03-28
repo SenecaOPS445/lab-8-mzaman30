@@ -1,0 +1,87 @@
+---
+- name: Configure CentOS VM for OPS445 using Ansible
+  hosts: myvmlab
+  become: yes
+  vars:
+    seneca_id: mzaman30
+
+  tasks:
+    - name: Set hostname to Seneca ID
+      hostname:
+        name: "{{ seneca_id }}"
+
+    - name: Ensure EPEL repository is installed
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Remove 'tree' package if installed
+      yum:
+        name: tree
+        state: absent
+
+    - name: Create new user with Seneca ID
+      user:
+        name: "{{ seneca_id }}"
+        shell: /bin/bash
+        state: present
+        create_home: yes
+
+    - name: Allow user to run sudo without password
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^{{ seneca_id }}'
+        line: '{{ seneca_id }} ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Create .ssh directory for new user
+      file:
+        path: "/home/{{ seneca_id }}/.ssh"
+        state: directory
+        owner: "{{ seneca_id }}"
+        group: "{{ seneca_id }}"
+        mode: '0700'
+
+    - name: Copy authorized_keys from student user to new user (remote)
+      copy:
+        remote_src: yes
+        src: /home/student/.ssh/authorized_keys
+        dest: "/home/{{ seneca_id }}/.ssh/authorized_keys"
+        owner: "{{ seneca_id }}"
+        group: "{{ seneca_id }}"
+        mode: '0600'
+
+    - name: Create lab directories using a loop
+      file:
+        path: "/home/{{ seneca_id }}/ops445/lab{{ item }}"
+        state: directory
+        owner: "{{ seneca_id }}"
+        group: "{{ seneca_id }}"
+        mode: '0755'
+      loop: [1, 2, 3, 4, 5, 6, 7, 8]
+
+    - name: Ensure ownership of ops445 directory tree
+      file:
+        path: "/home/{{ seneca_id }}/ops445"
+        state: directory
+        recurse: yes
+        owner: "{{ seneca_id }}"
+        group: "{{ seneca_id }}"
+
+    - name: Configure custom MOTD
+      copy:
+        content: "Welcome to OPS445 Lab 8 - Managed by Ansible ({{ ansible_facts['hostname'] }})\n"
+        dest: /etc/motd
+
+    - name: Install Apache httpd
+      yum:
+        name: httpd
+        state: present
+
+    - name: Enable and start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+

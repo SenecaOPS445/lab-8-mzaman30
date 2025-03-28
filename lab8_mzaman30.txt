@@ -1,0 +1,52 @@
+
+PLAY [Configure CentOS VM for OPS445 using Ansible] ****************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [mycentos]
+
+TASK [Set hostname to Seneca ID] ***********************************************
+ok: [mycentos]
+
+TASK [Ensure EPEL repository is installed] *************************************
+ok: [mycentos]
+
+TASK [Remove 'tree' package if installed] **************************************
+changed: [mycentos]
+
+TASK [Create new user with Seneca ID] ******************************************
+ok: [mycentos]
+
+TASK [Allow user to run sudo without password] *********************************
+ok: [mycentos]
+
+TASK [Create .ssh directory for new user] **************************************
+ok: [mycentos]
+
+TASK [Copy authorized_keys from student user to new user (remote)] *************
+ok: [mycentos]
+
+TASK [Create lab directories using a loop] *************************************
+ok: [mycentos] => (item=1)
+ok: [mycentos] => (item=2)
+ok: [mycentos] => (item=3)
+ok: [mycentos] => (item=4)
+ok: [mycentos] => (item=5)
+ok: [mycentos] => (item=6)
+ok: [mycentos] => (item=7)
+ok: [mycentos] => (item=8)
+
+TASK [Ensure ownership of ops445 directory tree] *******************************
+ok: [mycentos]
+
+TASK [Configure custom MOTD] ***************************************************
+ok: [mycentos]
+
+TASK [Install Apache httpd] ****************************************************
+ok: [mycentos]
+
+TASK [Enable and start Apache service] *****************************************
+ok: [mycentos]
+
+PLAY RECAP *********************************************************************
+mycentos                   : ok=13   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

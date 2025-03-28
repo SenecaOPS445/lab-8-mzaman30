@@ -1,0 +1,16 @@
+---
+- name: Install and start Apache HTTPD on MyVMLab VM
+  hosts: myvmlab
+  become: yes
+  tasks:
+    - name: Install Apache package
+      yum:
+        name: httpd
+        state: present
+
+    - name: Enable and start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
